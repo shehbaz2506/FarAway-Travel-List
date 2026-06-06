@@ -25,15 +25,26 @@ function Form() {
   //controlled elements is in three peices
 
   const [description, setDescription] = useState("");
+  const [quantity , setQuantity] = useState(1)
 
   function handleSubmit(e) {
     e.preventDefault(); // prevents the browser or elemt actions and stops it - like reloading of page on clicking submit
+
+    if(!description) return; //if no description no call of object 
+
+    const newitem = {description , quantity, packed:false, id:Date.now()}
+    console.log(newitem)
+
+    setDescription('')
+    setQuantity(1)
   }
+
+
 
   return (
     <form className="add-form" onSubmit={handleSubmit}>
       <h3>What Do you need for your 😃 trip?</h3>
-      <select>
+      <select value={quantity} onChange={(e)=> { setQuantity(Number(e.target.value))}}>
         {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
           <option value={num} key={num}>
             {num}
