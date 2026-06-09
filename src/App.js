@@ -31,15 +31,13 @@ function Form() {
     e.preventDefault(); // prevents the browser or elemt actions and stops it - like reloading of page on clicking submit
 
     if(!description) return; //if no description no call of object 
-
+    
     const newitem = {description , quantity, packed:false, id:Date.now()}
     console.log(newitem)
 
     setDescription('')
     setQuantity(1)
   }
-
-
 
   return (
     <form className="add-form" onSubmit={handleSubmit}>
@@ -73,6 +71,8 @@ function PackingList() {
     </div>
   );
 }
+
+
 // conditionally setting the style class using the ternarie operator
 function Item({ item }) {
   return (
