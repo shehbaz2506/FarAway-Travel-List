@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 
 const initialItems = [
   { id: 1, description: "Passports", quantity: 2, packed: false },
@@ -7,11 +7,19 @@ const initialItems = [
 ];
 
 function App() {
+
+  const [items , SetItems] = useState([]);
+
+  function handleAddItems(item){
+    SetItems(items=> [...items , item])
+  }
+
+
   return (
     <div className="app">
       <Logo />
-      <Form />
-      <PackingList />
+      <Form onAddItems={handleAddItems} />
+      <PackingList  items={items}/>
       <Stats />
     </div>
   );
@@ -21,11 +29,13 @@ function Logo() {
   return <h1>🌴Far Away🧳</h1>;
 }
 
-function Form() {
+function Form({onAddItems}) {
   //controlled elements is in three peices
 
   const [description, setDescription] = useState("");
   const [quantity , setQuantity] = useState(1)
+  
+  
 
   function handleSubmit(e) {
     e.preventDefault(); // prevents the browser or elemt actions and stops it - like reloading of page on clicking submit
@@ -34,6 +44,8 @@ function Form() {
     
     const newitem = {description , quantity, packed:false, id:Date.now()}
     console.log(newitem)
+
+    onAddItems(newitem)
 
     setDescription('')
     setQuantity(1)
@@ -60,11 +72,11 @@ function Form() {
   );
 }
 
-function PackingList() {
+function PackingList({items}) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
+        {items.map((item) => (
           <Item item={item} key={item.id} />
         ))}
       </ul>
