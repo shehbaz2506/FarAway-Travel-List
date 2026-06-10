@@ -1,10 +1,6 @@
-import { use, useState } from "react";
+import {  useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: true },
-  { id: 3, description: "Charger", quantity: 1, packed: false },
-];
+
 
 function App() {
 
@@ -14,12 +10,22 @@ function App() {
     SetItems(items=> [...items , item])
   }
 
+  function handleDeleteItem(id){
+    SetItems(items=>items.filter(item=> item.id !==id))
+  }
+
+  function handleToggleItem(id){
+    SetItems(items=> 
+      items.map(item => 
+        item.id === id ? {...item , packed :!item.packed} : item));
+  }
+
 
   return (
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList  items={items}/>
+      <PackingList  items={items} onDeleteItem={handleDeleteItem} onToggleItems={handleToggleItem}/>
       <Stats />
     </div>
   );
@@ -72,12 +78,12 @@ function Form({onAddItems}) {
   );
 }
 
-function PackingList({items}) {
+function PackingList({items,onDeleteItem,onToggleItems}) {
   return (
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item item={item} key={item.id} />
+          <Item item={item} key={item.id} onDeleteItem={onDeleteItem} onToggleItems={onToggleItems}  />
         ))}
       </ul>
     </div>
@@ -86,13 +92,14 @@ function PackingList({items}) {
 
 
 // conditionally setting the style class using the ternarie operator
-function Item({ item }) {
+function Item({ item, onDeleteItem,onToggleItems }) {
   return (
     <li>
+      <input type="checkbox" value={item.checked}  onChange={()=>onToggleItems(item.id)}/>
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button>❌</button>
+      <button onClick={()=> onDeleteItem(item.id)}>❌</button>
     </li>
   );
 }
