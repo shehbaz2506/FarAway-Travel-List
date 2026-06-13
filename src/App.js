@@ -26,7 +26,7 @@ function App() {
     if(confirmation){
       SetItems([])
     }
-    
+
   }
 
   return (
