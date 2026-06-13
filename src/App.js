@@ -1,32 +1,44 @@
-import {  useState } from "react";
-
-
+import { useState } from "react";
 
 function App() {
+  const [items, SetItems] = useState([]);
 
-  const [items , SetItems] = useState([]);
-  
-
-  function handleAddItems(item){
-    SetItems(items=> [...items , item])
+  function handleAddItems(item) {
+    SetItems((items) => [...items, item]);
   }
 
-  function handleDeleteItem(id){
-    SetItems(items=>items.filter(item=> item.id !==id))
+  function handleDeleteItem(id) {
+    SetItems((items) => items.filter((item) => item.id !== id));
   }
 
-  function handleToggleItem(id){
-    SetItems(items=> 
-      items.map(item => 
-        item.id === id ? {...item , packed :!item.packed} : item));
+  function handleToggleItem(id) {
+    SetItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item,
+      ),
+    );
   }
 
+  function handleClearItems() {
+
+    const confirmation = window.confirm("Are you sure you want to delete all the items")
+
+    if(confirmation){
+      SetItems([])
+    }
+    
+  }
 
   return (
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList  items={items} onDeleteItem={handleDeleteItem} onToggleItems={handleToggleItem}/>
+      <PackingList
+        items={items}
+        onDeleteItem={handleDeleteItem}
+        onToggleItems={handleToggleItem}
+        clearitems={handleClearItems}
+      />
       <Stats items={items} />
     </div>
   );
@@ -36,31 +48,34 @@ function Logo() {
   return <h1>🌴Far Away🧳</h1>;
 }
 
-function Form({onAddItems}) {
+function Form({ onAddItems }) {
   //controlled elements is in three peices
 
   const [description, setDescription] = useState("");
-  const [quantity , setQuantity] = useState(1)
-  
-  
+  const [quantity, setQuantity] = useState(1);
 
   function handleSubmit(e) {
     e.preventDefault(); // prevents the browser or elemt actions and stops it - like reloading of page on clicking submit
 
-    if(!description) return; //if no description no call of object 
-    
-    const newitem = {description , quantity, packed:false, id:Date.now()}
+    if (!description) return; //if no description no call of object
 
-    onAddItems(newitem)
+    const newitem = { description, quantity, packed: false, id: Date.now() };
 
-    setDescription('')
-    setQuantity(1)
+    onAddItems(newitem);
+
+    setDescription("");
+    setQuantity(1);
   }
 
   return (
     <form className="add-form" onSubmit={handleSubmit}>
       <h3>What Do you need for your 😃 trip?</h3>
-      <select value={quantity} onChange={(e)=> { setQuantity(Number(e.target.value))}}>
+      <select
+        value={quantity}
+        onChange={(e) => {
+          setQuantity(Number(e.target.value));
+        }}
+      >
         {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
           <option value={num} key={num}>
             {num}
@@ -78,74 +93,89 @@ function Form({onAddItems}) {
   );
 }
 
-function PackingList({items,onDeleteItem,onToggleItems}) {
-
-  const[sortby, setSortBy] = useState('input')
-
-  
+function PackingList({ items, onDeleteItem, onToggleItems, clearitems }) {
+  const [sortby, setSortBy] = useState("input");
 
   let sortedItems;
-  if(sortby ==="input") sortedItems = items;
+  if (sortby === "input") sortedItems = items;
 
-  if(sortby === "description") sortedItems =items.slice().sort((a,b)=> a.description.localeCompare(b.description));
+  if (sortby === "description")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
 
-  if(sortby === "packed") sortedItems = items.slice().sort((a,b)=> Number(a.packed)- Number(b.packed));
+  if (sortby === "packed")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
 
   return (
     <div className="list">
       <ul>
         {sortedItems.map((item) => (
-          <Item item={item} key={item.id} onDeleteItem={onDeleteItem} onToggleItems={onToggleItems}  />
+          <Item
+            item={item}
+            key={item.id}
+            onDeleteItem={onDeleteItem}
+            onToggleItems={onToggleItems}
+          />
         ))}
       </ul>
 
-        <div className="actions">
-          <select value={sortby} onChange={e=>setSortBy(e.target.value)}>
-            <option value='input'>Sort by Input Order</option>
-            <option value='description'>Sort by Description</option>
-            <option value='packed'>Sort by Packed Status</option>
-          </select>
-        </div>
-
+      <div className="actions">
+        <select value={sortby} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Sort by Input Order</option>
+          <option value="description">Sort by Description</option>
+          <option value="packed">Sort by Packed Status</option>
+        </select>
+        <button onClick={clearitems}>Clear List</button>
+      </div>
     </div>
   );
 }
 
-
 // conditionally setting the style class using the ternary operator
-function Item({ item, onDeleteItem,onToggleItems }) {
+function Item({ item, onDeleteItem, onToggleItems }) {
   return (
     <li>
-      <input type="checkbox" value={item.checked}  onChange={()=>onToggleItems(item.id)}/>
+      <input
+        type="checkbox"
+        value={item.checked}
+        onChange={() => onToggleItems(item.id)}
+      />
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button onClick={()=> onDeleteItem(item.id)}>❌</button>
+      <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 }
 
-function Stats({items}) {
-
-  if(!items.length)
-    return(
+function Stats({ items }) {
+  if (!items.length)
+    return (
       <p className="stats">
         <em>Start Adding Some Items to your packing list ✍️</em>
       </p>
-    )
+    );
 
   const numItems = items.length;
-  const numPacked=items.filter(item=> item.packed).length;
-
+  const numPacked = items.filter((item) => item.packed).length;
 
   //function to calculate percentage
 
-  const percentage= Math.round(numPacked / numItems *100);
+  const percentage = Math.round((numPacked / numItems) * 100);
 
   return (
     <footer className="stats">
-      {percentage === 100 ? "You got Everything! Ready to Go ✈️":<em>🧳You have {numItems} items on your list , and you already packed {numPacked}({percentage}%</em>} 
-      
+      {percentage === 100 ? (
+        "You got Everything! Ready to Go ✈️"
+      ) : (
+        <em>
+          🧳You have {numItems} items on your list , and you already packed{" "}
+          {numPacked}({percentage}%
+        </em>
+      )}
     </footer>
   );
 }
