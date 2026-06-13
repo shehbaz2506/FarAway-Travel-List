@@ -82,8 +82,9 @@ function PackingList({items,onDeleteItem,onToggleItems}) {
 
   const[sortby, setSortBy] = useState('input')
 
-  let sortedItems;
+  
 
+  let sortedItems;
   if(sortby ==="input") sortedItems = items;
 
   if(sortby === "description") sortedItems =items.slice().sort((a,b)=> a.description.localeCompare(b.description));
@@ -111,7 +112,7 @@ function PackingList({items,onDeleteItem,onToggleItems}) {
 }
 
 
-// conditionally setting the style class using the ternarie operator
+// conditionally setting the style class using the ternary operator
 function Item({ item, onDeleteItem,onToggleItems }) {
   return (
     <li>
